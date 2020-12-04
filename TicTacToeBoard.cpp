@@ -1,4 +1,5 @@
 #include "TicTacToeBoard.h"
+#include <iostream>
 /**
  * Class for representing a 3x3 Tic-Tac-Toe game board, using the Piece enum
  * to represent the spaces on the board.
@@ -19,7 +20,11 @@ TicTacToeBoard::TicTacToeBoard()
 **/
 Piece TicTacToeBoard::toggleTurn()
 {
-  return Invalid;
+    if(turn == X)
+        turn = O;
+    else
+        turn = X; 
+    return turn;
 }
 
 /**
@@ -33,7 +38,14 @@ Piece TicTacToeBoard::toggleTurn()
 **/ 
 Piece TicTacToeBoard::placePiece(int row, int column)
 {
-  return Invalid;
+    if(row < 0 || row >= BOARDSIZE || column < 0 || column >= BOARDSIZE)
+        return Invalid;
+    if(board[row][column] != Blank)
+        return board[row][column];
+    Piece p = turn;
+    board[row][column] = turn;
+    toggleTurn();
+    return p;
 }
 
 /**
@@ -42,7 +54,9 @@ Piece TicTacToeBoard::placePiece(int row, int column)
 **/
 Piece TicTacToeBoard::getPiece(int row, int column)
 {
-  return Invalid;
+    if(row < 0 || row >= BOARDSIZE || column < 0 || column >= BOARDSIZE)
+        return Invalid;
+    return board[row][column];
 }
 
 /**
@@ -51,5 +65,48 @@ Piece TicTacToeBoard::getPiece(int row, int column)
 **/
 Piece TicTacToeBoard::getWinner()
 {
-  return Invalid;
+    const int numOfOptions = 8;
+    int win[numOfOptions][3] = 
+    {
+        {0, 1, 2}, 
+        {3, 4, 5},
+        {6, 7, 8},
+
+        {0, 3, 6},
+        {1, 4, 7},
+        {2, 5, 8},
+
+        {0, 4, 8},
+        {2, 4, 6}
+
+    };
+    for(int i = 0; i < numOfOptions; i++)
+    {
+        Piece p;
+        int count = 0;
+        for(int j = 0; j < 3; j++)
+        {
+            int row = win[i][j] / 3;
+            int col = win[i][j] % 3;
+            if(j == 0)
+            {
+                if(board[row][col] == Blank || board[row][col] == Invalid)
+                    break;
+                p = board[row][col];
+            }
+            if(board[row][col] == p)
+                count++;
+        }
+        if(count == 3)
+            return p;
+    }
+    for(int i = 0; i < BOARDSIZE; i++)
+    {
+        for(int j = 0; j < BOARDSIZE; j++)
+        {
+            if(board[i][j] == Blank) 
+                return Invalid;
+        }
+    }
+    return Blank;
 }
